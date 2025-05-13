@@ -91,7 +91,7 @@
                         <div class="card stat-card primary">
                             <div class="card-body">
                                 <h5 class="card-title">Almacenes</h5>
-                                <h2 class="card-text">5</h2>
+                                <h2 class="card-text">{{ almacenes_count }}</h2>
                                 <small class="text-muted">Total registrados</small>
                             </div>
                         </div>
@@ -100,7 +100,7 @@
                         <div class="card stat-card success">
                             <div class="card-body">
                                 <h5 class="card-title">Productos</h5>
-                                <h2 class="card-text">128</h2>
+                                <h2 class="card-text">{{ productos_count }}</h2>
                                 <small class="text-muted">En inventario</small>
                             </div>
                         </div>
@@ -109,8 +109,8 @@
                         <div class="card stat-card warning">
                             <div class="card-body">
                                 <h5 class="card-title">Movimientos</h5>
-                                <h2 class="card-text">42</h2>
-                                <small class="text-muted">Este mes</small>
+                                <h2 class="card-text">{{ movimientos_count }}</h2>
+                                <small class="text-muted">Registrados</small>
                             </div>
                         </div>
                     </div>
@@ -118,7 +118,7 @@
                         <div class="card stat-card danger">
                             <div class="card-body">
                                 <h5 class="card-title">Alertas</h5>
-                                <h2 class="card-text">7</h2>
+                                <h2 class="card-text">{{ alertas_stock|length }}</h2>
                                 <small class="text-muted">Por atender</small>
                             </div>
                         </div>
@@ -130,33 +130,33 @@
                     <div class="col-md-8 mb-4">
                         <div class="card">
                             <div class="card-header bg-primary text-white">
-                                <i class="bi bi-clock-history"></i> Actividad Reciente
+                                <i class="bi bi-clock-history"></i> Movimientos Recientes
                             </div>
                             <div class="card-body">
                                 <table class="table table-hover">
                                     <thead>
                                         <tr>
-                                            <th>Usuario</th>
-                                            <th>Acción</th>
+                                            <th>Tipo</th>
+                                            <th>Producto</th>
+                                            <th>Almacén</th>
+                                            <th>Cantidad</th>
                                             <th>Fecha</th>
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        {% for movimiento in movimientos_recientes %}
                                         <tr>
-                                            <td>admin</td>
-                                            <td>Registró nuevo producto</td>
-                                            <td>2023-05-20 14:30</td>
+                                            <td>
+                                                <span class="badge bg-{% if movimiento.tipo == 'Entrada' %}success{% else %}danger{% endif %}">
+                                                    {{ movimiento.tipo }}
+                                                </span>
+                                            </td>
+                                            <td>{{ movimiento.producto.nombre }}</td>
+                                            <td>{{ movimiento.almacen.nombre }}</td>
+                                            <td>{{ movimiento.cantidad }}</td>
+                                            <td>{{ movimiento.fecha.strftime('%Y-%m-%d %H:%M') }}</td>
                                         </tr>
-                                        <tr>
-                                            <td>jperez</td>
-                                            <td>Actualizó inventario</td>
-                                            <td>2023-05-20 13:15</td>
-                                        </tr>
-                                        <tr>
-                                            <td>mgarcia</td>
-                                            <td>Generó reporte mensual</td>
-                                            <td>2023-05-20 11:45</td>
-                                        </tr>
+                                        {% endfor %}
                                     </tbody>
                                 </table>
                             </div>
@@ -166,17 +166,22 @@
                     <div class="col-md-4 mb-4">
                         <div class="card">
                             <div class="card-header bg-warning text-dark">
-                                <i class="bi bi-exclamation-triangle"></i> Alertas Recientes
+                                <i class="bi bi-exclamation-triangle"></i> Alertas de Stock
                             </div>
                             <div class="card-body">
+                                {% for alerta in alertas_stock %}
                                 <div class="alert alert-danger">
-                                    <h6><i class="bi bi-box"></i> Stock Mínimo</h6>
-                                    <p>Laptop XZ-200 en Almacén Central (Quedan 3)</p>
+                                    <h6><i class="bi bi-box"></i> Stock Bajo</h6>
+                                    <p>
+                                        {{ alerta.producto.nombre }} en {{ alerta.almacen.nombre }}<br>
+                                        <small>Quedan: {{ alerta.cantidad_actual }} {{ alerta.producto.unidad }}</small>
+                                    </p>
                                 </div>
-                                <div class="alert alert-warning">
-                                    <h6><i class="bi bi-calendar-x"></i> Próximo a vencer</h6>
-                                    <p>Tóner Impresora (Lote TON-2023-05)</p>
+                                {% else %}
+                                <div class="alert alert-success">
+                                    <i class="bi bi-check-circle"></i> No hay alertas de stock
                                 </div>
+                                {% endfor %}
                             </div>
                         </div>
                     </div>
@@ -193,29 +198,19 @@
                                 <tr>
                                     <th>Almacén</th>
                                     <th>Productos</th>
-                                    <th>Valor Total</th>
+                                    <th>Existencia Total</th>
                                     <th>Última Actualización</th>
                                 </tr>
                             </thead>
                             <tbody>
+                                {% for almacen in resumen_almacenes %}
                                 <tr>
-                                    <td>Central CDMX</td>
-                                    <td>58</td>
-                                    <td>$1,250,000</td>
-                                    <td>2023-05-20</td>
+                                    <td>{{ almacen.nombre }}</td>
+                                    <td>{{ almacen.total_productos }}</td>
+                                    <td>{{ almacen.total_existencias }}</td>
+                                    <td>{{ almacen.ultima_actualizacion.strftime('%Y-%m-%d') if almacen.ultima_actualizacion else 'N/A' }}</td>
                                 </tr>
-                                <tr>
-                                    <td>Norte MTY</td>
-                                    <td>42</td>
-                                    <td>$850,000</td>
-                                    <td>2023-05-19</td>
-                                </tr>
-                                <tr>
-                                    <td>Pacífico GDL</td>
-                                    <td>28</td>
-                                    <td>$520,000</td>
-                                    <td>2023-05-18</td>
-                                </tr>
+                                {% endfor %}
                             </tbody>
                         </table>
                     </div>

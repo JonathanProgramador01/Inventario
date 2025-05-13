@@ -14,7 +14,6 @@ with app.app_context():
     db.create_all()  # Crea las tablas en la base de datos si no existen
 
 
-#e
 @app.route('/', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -37,7 +36,9 @@ def login():
 
     return render_template('login.html')
 
+
 # 343
+
 
 @app.route('/dashboard')
 def dashboard():
@@ -93,13 +94,17 @@ def dashboard():
 
 
 
+
+
+
+
+
+
+
 @app.route('/logout')
 def logout():
     session.clear()  # Limpia toda la sesión
     return redirect(url_for('login'))  # Redirige al login
-
-
-
 
 
 
