@@ -1,20 +1,21 @@
 import datetime
-
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
 
+
+
 class Base(DeclarativeBase):
     pass
-
 db = SQLAlchemy(model_class=Base)
+
+
+
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     usuario = db.Column(db.String(80), unique=True, nullable=False)
     contraseña = db.Column(db.String(120), nullable=False)
     rol = db.Column(db.String(50), nullable=False, default='miembro')  # admin, veterano, miembro
-
-
 
 class Almacen(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -35,7 +36,7 @@ class Entrada(db.Model):
     producto_id = db.Column(db.Integer, db.ForeignKey('producto.id'), nullable=False)
     almacen_id = db.Column(db.Integer, db.ForeignKey('almacen.id'), nullable=False)
     cantidad = db.Column(db.Float, nullable=False)
-    fecha = db.Column(db.DateTime, default=datetime.utcnow)
+    fecha = db.Column(db.DateTime)
 
     producto = db.relationship('Producto')
     almacen = db.relationship('Almacen')
@@ -46,10 +47,11 @@ class Salida(db.Model):
     producto_id = db.Column(db.Integer, db.ForeignKey('producto.id'), nullable=False)
     almacen_id = db.Column(db.Integer, db.ForeignKey('almacen.id'), nullable=False)
     cantidad = db.Column(db.Float, nullable=False)
-    fecha = db.Column(db.DateTime, default=datetime.utcnow)
+    fecha = db.Column(db.DateTime)
 
     producto = db.relationship('Producto')
     almacen = db.relationship('Almacen')
+
 
 class Existencia(db.Model):
     id = db.Column(db.Integer, primary_key=True)
