@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    /* Estilos para el inventario */
+    .inventory-container {
+        padding: 2rem;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .inventory-header {
+        margin-bottom: 2.5rem;
+    }
+
+    .inventory-title {
+        font-family: 'Orbitron', sans-serif;
+        font-weight: 600;
+        color: white;
+        font-size: 2.2rem;
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .inventory-title i {
+        margin-right: 1rem;
+        color: var(--primary);
+        background: var(--tech-gradient);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .inventory-table-container {
+        background: rgba(26, 26, 46, 0.7);
+        backdrop-filter: blur(12px);
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        overflow: hidden;
+    }
+
+    /* Estilos para la tabla */
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    .table th {
+        background: rgba(67, 97, 238, 0.1);
+        color: var(--primary);
+        font-weight: 500;
+        padding: 1rem;
+        text-align: left;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        letter-spacing: 1px;
+    }
+
+    .table td {
+        padding: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        vertical-align: middle;
+    }
+
+    .table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .table tr:hover {
+        background: rgba(255, 255, 255, 0.03);
+    }
+
+    /* Badges para cantidades */
+    .quantity-badge {
+        display: inline-block;
+        padding: 0.3em 0.6em;
+        border-radius: 50rem;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .quantity-normal {
+        background: rgba(67, 97, 238, 0.2);
+        color: var(--primary);
+    }
+
+    .quantity-low {
+        background: rgba(220, 53, 69, 0.2);
+        color: var(--danger);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .table th {
+            display: none;
+        }
+
+        .table tr {
+            display: block;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+        }
+
+        .table td {
+            display: block;
+            text-align: right;
+            padding: 0.75rem 1rem;
+        }
+
+        .table td::before {
+            content: attr(data-label);
+            float: left;
+            font-weight: 600;
+            color: var(--primary);
+        }
+    }
+</style>
+
+<div class="inventory-container">
+    <!-- Header -->
+    <div class="inventory-header">
+        <h1 class="inventory-title">
+            <i class="fas fa-boxes"></i>Inventario Disponible
+        </h1>
+        <p class="warehouse-subtitle">Consulta el stock actual de productos</p>
+    </div>
+
+    <!-- Tabla de inventario -->
+    <div class="inventory-table-container">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Almacén</th>
+                        <th>Existencia</th>
+                        <th>Unidad</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for existencia, producto, almacen in inventario %}
+                    <tr>
+                        <td data-label="Producto">
+                            {{ producto.nombre }}
+                            {% if producto.descripcion %}
+                            <small class="text-muted d-block">{{ producto.descripcion }}</small>
+                            {% endif %}
+                        </td>
+                        <td data-label="Almacén">
+                            {{ almacen.nombre }}
+                            <small class="text-muted d-block">{{ almacen.ciudad }}</small>
+                        </td>
+                        <td data-label="Existencia">
+                            <span class="quantity-badge {% if existencia.cantidad_actual < 5 %}quantity-low{% else %}quantity-normal{% endif %}">
+                                {{ existencia.cantidad_actual }}
+                            </span>
+                        </td>
+                        <td data-label="Unidad">{{ producto.unidad }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="empty-message">No hay registros de inventario</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

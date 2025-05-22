@@ -211,13 +211,7 @@ VALUES ('Pepe', '1234', 'miembro');
 INSERT INTO user (usuario, contraseña, rol)
 VALUES ('Axel', '1234', 'veterano'); */
 
--- Usuarios
-INSERT INTO user (usuario, contraseña, rol) VALUES
-('admin', 'admin123', 'admin'),
-('jperez', 'contra123', 'veterano'),
-('mgarcia', 'password', 'miembro'),
-('lrodriguez', 'seguro456', 'veterano'),
-('amartinez', 'acceso789', 'miembro');
+
 
 -- Almacenes
 INSERT INTO almacen (nombre, ciudad, direccion) VALUES
@@ -269,5 +263,27 @@ INSERT INTO salida (producto_id, almacen_id, cantidad, fecha) VALUES
 (4, 2, 8, '2023-05-09 10:30:00'),
 (5, 1, 3, '2023-05-10 12:00:00'),
 (7, 3, 15, '2023-05-11 15:45:00');
+
+
+-- Datos de ejemplo para solicitudes
+INSERT INTO solicitud (usuario_id, producto_id, almacen_id, cantidad, comentario, fecha, estado) VALUES
+-- Solicitudes de Jonathan (admin)
+(1, 1, 1, 2, 'Para nuevo equipo de desarrollo', '2023-05-15 09:30:00', 'aprobada'),
+(1, 3, 3, 5, 'Reposición para área de diseño', '2023-05-16 11:15:00', 'pendiente'),
+
+-- Solicitudes de Pepe (miembro)
+(2, 2, 2, 1, 'Monitor para nueva contratación', '2023-05-10 14:20:00', 'aprobada'),
+(2, 5, 1, 3, 'Urgente para impresora de RH', '2023-05-12 16:45:00', 'rechazada'),
+(2, 7, 4, 10, 'Para área administrativa', '2023-05-14 10:00:00', 'pendiente'),
+
+-- Solicitudes de Axel (veterano)
+(3, 4, 2, 8, 'Reemplazo de equipos dañados', '2023-05-11 13:10:00', 'aprobada'),
+(3, 6, 1, 1, 'Nueva silla para visitas', '2023-05-13 15:30:00', 'pendiente'),
+(3, 8, 3, 1, 'Para nuevo empleado', '2023-05-17 08:45:00', 'pendiente');
+
+
+
+
+
 '''
 

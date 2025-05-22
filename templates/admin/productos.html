@@ -1,0 +1,999 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>/* Estilos generales del dashboard */
+.dashboard-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: rgba(26, 26, 46, 0.7);
+    backdrop-filter: blur(12px);
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(67, 97, 238, 0.3);
+}
+
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba(67, 97, 238, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    font-size: 1.5rem;
+    color: var(--primary);
+}
+
+.stat-info h3 {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 0.5rem;
+}
+
+.stat-number {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: white;
+}
+
+.stat-link {
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 0.9rem;
+    display: inline-block;
+    margin-top: 0.5rem;
+}
+
+/* Timeline de actividades */
+.activity-timeline {
+    margin-top: 2rem;
+}
+
+.timeline-item {
+    position: relative;
+    padding-left: 60px;
+    margin-bottom: 1.5rem;
+}
+
+.timeline-icon {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.timeline-item.entry .timeline-icon {
+    background: rgba(40, 167, 69, 0.2);
+    border: 1px solid rgba(40, 167, 69, 0.5);
+}
+
+.timeline-item.exit .timeline-icon {
+    background: rgba(220, 53, 69, 0.2);
+    border: 1px solid rgba(220, 53, 69, 0.5);
+}
+
+.timeline-content {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.timeline-date {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin-bottom: 0.5rem;
+}
+
+.timeline-details {
+    display: flex;
+    justify-content: space-between;
+}
+
+/* Alertas de stock */
+.stock-alerts {
+    margin-top: 2rem;
+}
+
+.alert-item {
+    background: rgba(220, 53, 69, 0.1);
+    border-left: 3px solid var(--danger);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 0 4px 4px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.alert-product {
+    font-weight: 500;
+}
+
+.alert-quantity {
+    color: var(--danger);
+    font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .dashboard-container {
+        grid-template-columns: 1fr;
+    }
+
+    .timeline-details {
+        flex-direction: column;
+    }
+}
+
+/* Estilos para reportes */
+.report-section {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.report-section h3 {
+    color: var(--accent);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.report-section h3 i {
+    margin-right: 0.8rem;
+}
+
+.report-section h4 {
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 1rem;
+}
+
+/* Mejoras para tablas */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+th {
+    background: rgba(67, 97, 238, 0.1);
+    text-align: left;
+    padding: 0.8rem;
+    font-weight: 500;
+}
+
+td {
+    padding: 0.8rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+tr:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+/* Estilos específicos para la página de almacenes */
+.page-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.page-header h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 600;
+    color: white;
+    display: flex;
+    align-items: center;
+}
+
+.page-header h1 i {
+    margin-right: 1rem;
+    color: var(--primary);
+}
+
+.page-header .lead {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.1rem;
+}
+
+/* Estilos para las tarjetas de almacenes */
+.almacen-card {
+    background: rgba(26, 26, 46, 0.7);
+    backdrop-filter: blur(12px);
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    margin-bottom: 1.5rem;
+}
+
+.almacen-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(67, 97, 238, 0.2);
+}
+
+.almacen-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.almacen-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: white;
+    margin: 0;
+}
+
+.almacen-actions .btn {
+    margin-left: 0.5rem;
+}
+
+.almacen-body p {
+    margin-bottom: 0.5rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.almacen-body strong {
+    color: white;
+    font-weight: 500;
+}
+
+/* Badges para contadores */
+.badge-almacen {
+    background: rgba(67, 97, 238, 0.2);
+    color: var(--primary);
+    font-weight: 500;
+    padding: 0.35rem 0.75rem;
+    border-radius: 50px;
+    font-size: 0.85rem;
+}
+
+/* Formularios */
+.form-almacen {
+    background: rgba(26, 26, 46, 0.7);
+    backdrop-filter: blur(12px);
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 2rem;
+}
+
+.form-almacen .form-label {
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.form-almacen .form-control {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.form-almacen .form-control:focus {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+    color: white;
+}
+
+/* Modal personalizado */
+.modal-almacen .modal-content {
+    background: #1a1a2e;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    backdrop-filter: blur(12px);
+}
+
+.modal-almacen .modal-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1.5rem;
+}
+
+.modal-almacen .modal-title {
+    color: white;
+    font-weight: 600;
+}
+
+.modal-almacen .modal-body {
+    padding: 1.5rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.modal-almacen .modal-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1rem 1.5rem;
+}
+
+/* Tabla de almacenes */
+.table-almacenes {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.table-almacenes thead th {
+    background: rgba(67, 97, 238, 0.1);
+    color: var(--primary);
+    font-weight: 500;
+    padding: 1rem;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    border: none;
+}
+
+.table-almacenes tbody tr {
+    transition: all 0.3s ease;
+}
+
+.table-almacenes tbody tr:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.table-almacenes tbody td {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    vertical-align: middle;
+}
+
+.table-almacenes .acciones {
+    white-space: nowrap;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .almacen-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .almacen-actions {
+        margin-top: 1rem;
+    }
+
+    .table-almacenes {
+        display: block;
+        overflow-x: auto;
+    }
+}
+/* Estilos base para la página de almacenes */
+.almacenes-container {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Header de la página */
+.page-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.page-header h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 600;
+    color: white;
+    display: flex;
+    align-items: center;
+    font-size: 2.2rem;
+    margin-bottom: 0.5rem;
+}
+
+.page-header h1 i {
+    margin-right: 1rem;
+    color: var(--primary);
+}
+
+.page-header .lead {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.1rem;
+}
+
+/* Tarjetas de estadísticas */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: rgba(26, 26, 46, 0.7);
+    backdrop-filter: blur(12px);
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(67, 97, 238, 0.15);
+}
+
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba(67, 97, 238, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1.5rem;
+    font-size: 1.5rem;
+    color: var(--primary);
+    flex-shrink: 0;
+}
+
+.stat-info h3 {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 600;
+    color: white;
+    line-height: 1;
+}
+
+/* Formulario de agregar almacén */
+.add-warehouse-form {
+    background: rgba(26, 26, 46, 0.7);
+    backdrop-filter: blur(12px);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-label {
+    display: block;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.form-control {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+    outline: none;
+}
+
+.btn-primary {
+    background: var(--tech-gradient);
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(67, 97, 238, 0.4);
+}
+
+.btn-primary i {
+    margin-right: 0.5rem;
+}
+
+/* Tabla de almacenes */
+.warehouse-table-container {
+    background: rgba(26, 26, 46, 0.7);
+    backdrop-filter: blur(12px);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+}
+
+.table-header {
+    padding: 1.25rem 1.5rem;
+    background: rgba(67, 97, 238, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.table-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: white;
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+.table-title i {
+    margin-right: 0.8rem;
+    color: var(--primary);
+}
+
+.table-responsive {
+    overflow-x: auto;
+    padding: 0 1.5rem 1.5rem;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    color: rgba(255, 255, 255, 0.8);
+    min-width: 800px;
+}
+
+.table th {
+    background: rgba(67, 97, 238, 0.1);
+    color: var(--primary);
+    font-weight: 500;
+    padding: 1rem;
+    text-align: left;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+}
+
+.table td {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    vertical-align: middle;
+}
+
+.table tr:last-child td {
+    border-bottom: none;
+}
+
+.table tr:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+/* Badges */
+.badge {
+    display: inline-block;
+    padding: 0.35em 0.65em;
+    font-size: 0.75em;
+    font-weight: 600;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 50rem;
+    background: rgba(67, 97, 238, 0.2);
+    color: var(--primary);
+}
+
+/* Acciones */
+.actions-cell {
+    white-space: nowrap;
+}
+
+.btn-action {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-right: 0.5rem;
+}
+
+.btn-action:hover {
+    transform: translateY(-2px);
+}
+
+.btn-edit {
+    border-color: rgba(13, 110, 253, 0.3);
+    color: rgba(13, 110, 253, 0.8);
+}
+
+.btn-edit:hover {
+    background: rgba(13, 110, 253, 0.1);
+    color: #0d6efd;
+}
+
+.btn-delete {
+    border-color: rgba(220, 53, 69, 0.3);
+    color: rgba(220, 53, 69, 0.8);
+}
+
+.btn-delete:hover {
+    background: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+}
+
+/* Mensaje cuando no hay datos */
+.empty-message {
+    text-align: center;
+    padding: 3rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Modales */
+.modal-content {
+    background: #1a1a2e;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    backdrop-filter: blur(12px);
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.modal-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1.5rem;
+}
+
+.modal-title {
+    color: white;
+    font-weight: 600;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1rem 1.5rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stat-card {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .stat-icon {
+        margin-right: 0;
+        margin-bottom: 1rem;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .table-responsive {
+        padding: 0;
+    }
+
+    .table {
+        min-width: 100%;
+    }
+
+    .table th {
+        display: none;
+    }
+
+    .table tr {
+        display: block;
+        margin-bottom: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+    }
+
+    .table td {
+        display: block;
+        text-align: right;
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .table td::before {
+        content: attr(data-label);
+        float: left;
+        font-weight: 600;
+        color: var(--primary);
+    }
+
+    .table td:last-child {
+        border-bottom: none;
+    }
+
+    .actions-cell {
+        display: flex;
+        justify-content: flex-end;
+    }
+}
+    /* Estilos específicos para productos (similar a almacenes pero ajustado) */
+    .products-container {
+        padding: 2rem;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .products-header {
+        margin-bottom: 2.5rem;
+    }
+
+    .products-title {
+        font-family: 'Orbitron', sans-serif;
+        font-weight: 600;
+        color: white;
+        font-size: 2.2rem;
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .products-title i {
+        margin-right: 1rem;
+        color: var(--primary);
+        background: var(--tech-gradient);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .add-product-form {
+        background: rgba(26, 26, 46, 0.7);
+        backdrop-filter: blur(12px);
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        margin-bottom: 2.5rem;
+        padding: 1.5rem;
+    }
+
+    .form-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: white;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .form-title i {
+        margin-right: 0.8rem;
+        color: var(--accent);
+    }
+
+    .products-table-container {
+        background: rgba(26, 26, 46, 0.7);
+        backdrop-filter: blur(12px);
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        overflow: hidden;
+    }
+
+    /* Mantener los mismos estilos para botones, modales, etc. que en almacenes */
+</style>
+
+<div class="products-container">
+    <!-- Header -->
+    <div class="products-header">
+        <h1 class="products-title">
+            <i class="fas fa-boxes"></i>Gestión de Productos
+        </h1>
+        <p class="warehouse-subtitle">Administra los productos disponibles en el sistema</p>
+    </div>
+
+    <!-- Formulario para agregar producto -->
+    <div class="add-product-form">
+        <h2 class="form-title"><i class="fas fa-plus-circle"></i> Agregar Nuevo Producto</h2>
+        <form method="POST" action="{{ url_for('agregar_producto') }}">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="nombre" class="form-label">Nombre del Producto</label>
+                    <input type="text" class="form-control" id="nombre" name="nombre" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="descripcion" class="form-label">Descripción</label>
+                    <textarea class="form-control" id="descripcion" name="descripcion" rows="2"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="unidad" class="form-label">Unidad de Medida</label>
+                    <select class="form-control" id="unidad" name="unidad" required>
+                        <option value="">Seleccionar...</option>
+                        <option value="unidad">Unidad</option>
+                        <option value="kg">Kilogramo</option>
+                        <option value="litro">Litro</option>
+                        <option value="metro">Metro</option>
+                        <option value="paquete">Paquete</option>
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Guardar Producto
+            </button>
+        </form>
+    </div>
+
+    <!-- Tabla de productos -->
+    <div class="products-table-container">
+        <div class="table-header">
+            <h2 class="table-title"><i class="fas fa-list"></i> Listado de Productos</h2>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Unidad</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for producto in productos %}
+                    <tr>
+                        <td data-label="ID">{{ producto.id }}</td>
+                        <td data-label="Nombre">{{ producto.nombre }}</td>
+                        <td data-label="Descripción">{{ producto.descripcion|default('', true) }}</td>
+                        <td data-label="Unidad">
+                            <span class="badge">{{ producto.unidad|capitalize }}</span>
+                        </td>
+                        <td data-label="Acciones" class="actions-cell">
+                            <button class="btn-action btn-edit"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#editProductoModal{{ producto.id }}"
+                                    title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn-action btn-delete"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#deleteProductoModal{{ producto.id }}"
+                                    title="Eliminar">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="empty-message">No hay productos registrados</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modales para cada producto -->
+{% for producto in productos %}
+<!-- Modal de Edición -->
+<div class="modal fade" id="editProductoModal{{ producto.id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Editar Producto</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('editar_producto', id=producto.id) }}">
+                <div class="modal-body">
+                    <div class="form-group mb-3">
+                        <label class="form-label">Nombre</label>
+                        <input type="text" class="form-control" name="nombre" value="{{ producto.nombre }}" required>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label class="form-label">Descripción</label>
+                        <textarea class="form-control" name="descripcion" rows="3">{{ producto.descripcion }}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Unidad de Medida</label>
+                        <select class="form-control" name="unidad" required>
+                            <option value="unidad" {% if producto.unidad == 'unidad' %}selected{% endif %}>Unidad</option>
+                            <option value="kg" {% if producto.unidad == 'kg' %}selected{% endif %}>Kilogramo</option>
+                            <option value="litro" {% if producto.unidad == 'litro' %}selected{% endif %}>Litro</option>
+                            <option value="metro" {% if producto.unidad == 'metro' %}selected{% endif %}>Metro</option>
+                            <option value="paquete" {% if producto.unidad == 'paquete' %}selected{% endif %}>Paquete</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Eliminación -->
+<div class="modal fade" id="deleteProductoModal{{ producto.id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmar Eliminación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>¿Estás seguro de eliminar el producto <strong>{{ producto.nombre }}</strong>?</p>
+                <p class="text-danger">Esta acción no se puede deshacer y afectará los registros relacionados.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" data-bs-dismiss="modal">Cancelar</button>
+                <a href="{{ url_for('eliminar_producto', id=producto.id) }}" class="btn btn-danger">Eliminar</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}
+
+{% block scripts %}
+<!-- Bootstrap Bundle JS (incluye Popper) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+// Inicializar tooltips
+document.addEventListener('DOMContentLoaded', function() {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
+</script>
+{% endblock %}

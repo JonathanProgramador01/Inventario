@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard Administrador{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title"><i class="fas fa-tachometer-alt"></i> Panel de Control</h2>
+    </div>
+    <div class="card-body">
+        <!-- Estadísticas rápidas -->
+        <div class="dashboard-container">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-warehouse"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Almacenes</h3>
+                    <span class="stat-number">{{ almacenes_count }}</span>
+                    <a href="{{ url_for('gestion_almacenes') }}" class="stat-link">Ver todos →</a>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-boxes"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Productos</h3>
+                    <span class="stat-number">{{ productos_count }}</span>
+                    <a href="{{ url_for('gestion_productos') }}" class="stat-link">Ver todos →</a>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-exchange-alt"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Movimientos</h3>
+                    <span class="stat-number">{{ movimientos_count }}</span>
+                    <a href="{{ url_for('reportes') }}" class="stat-link">Ver reportes →</a>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Alertas</h3>
+                    <span class="stat-number">{{ alertas|length }}</span>
+                    <a href="#alertas" class="stat-link">Ver alertas →</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alertas de stock bajo -->
+        <div id="alertas" class="stock-alerts">
+            <h3 class="card-title"><i class="fas fa-exclamation-circle"></i> Alertas de Stock</h3>
+
+            {% if alertas %}
+                {% for alerta in alertas %}
+                <div class="alert-item">
+                    <div>
+                        <span class="alert-product">{{ alerta.producto.nombre }}</span> -
+                        <span>{{ alerta.almacen.nombre }}</span>
+                    </div>
+                    <span class="alert-quantity">
+                        {{ alerta.cantidad_actual }} {{ alerta.producto.unidad }}
+                    </span>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle"></i>
+                    No hay productos con stock bajo
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Actividad reciente -->
+        <div class="activity-timeline">
+            <h3 class="card-title"><i class="fas fa-history"></i> Actividad Reciente</h3>
+
+            {% if actividad_reciente %}
+                {% for tipo, movimiento in actividad_reciente %}
+                <div class="timeline-item {% if tipo == 'Entrada' %}entry{% else %}exit{% endif %}">
+                    <div class="timeline-icon">
+                        {% if tipo == 'Entrada' %}
+                        <i class="fas fa-arrow-down"></i>
+                        {% else %}
+                        <i class="fas fa-arrow-up"></i>
+                        {% endif %}
+                    </div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">
+                            {{ movimiento.fecha.strftime('%d/%m/%Y %H:%M') }}
+                        </div>
+                        <div class="timeline-details">
+                            <div>
+                                <strong>{{ movimiento.producto.nombre }}</strong> -
+                                {{ movimiento.almacen.nombre }}
+                            </div>
+                            <div class="{% if tipo == 'Entrada' %}text-success{% else %}text-danger{% endif %}">
+                                <strong>{{ movimiento.cantidad }} {{ movimiento.producto.unidad }}</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    No hay actividad reciente para mostrar
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

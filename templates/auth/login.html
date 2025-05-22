@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Inventory | Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Orbitron:wght@500;600&display=swap" rel="stylesheet">
+    <style>
+        html {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+}
+
+html::-webkit-scrollbar {
+    display: none; /* Chrome, Safari y Edge */
+}
+
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a0ca3;
+            --secondary: #7209b7;
+            --accent: #f72585;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --tech-gradient: linear-gradient(135deg, #3a0ca3 0%, #4361ee 100%);
+            --glass: rgba(255, 255, 255, 0.08);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.2);
+            --neon-shadow: 0 0 10px rgba(67, 97, 238, 0.7);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #0f0f1a;
+    color: var(--light);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-image:
+        radial-gradient(circle at 10% 20%, rgba(114, 9, 183, 0.15) 0%, transparent 30%),
+        radial-gradient(circle at 90% 80%, rgba(67, 97, 238, 0.15) 0%, transparent 30%);
+    overflow-x: hidden; /* solo oculta scroll horizontal */
+}
+
+
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+.auth-container {
+    width: 100%;
+    max-width: 480px;
+    padding: 2rem;
+    perspective: 1000px;
+    z-index: 10;
+}
+
+
+        .auth-container::-webkit-scrollbar {
+            display: none; /* Chrome/Safari */
+        }
+
+        .auth-card {
+            background: rgba(26, 26, 46, 0.7);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), var(--neon-shadow);
+            border: var(--glass-border);
+            transform-style: preserve-3d;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        /* Resto del CSS se mantiene igual hasta el final */
+        .company-logo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 2rem;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 600;
+            position: relative;
+        }
+
+        .logo-icon {
+            font-size: 3.5rem;
+            margin-bottom: 0.5rem;
+            background: var(--tech-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 8px rgba(67, 97, 238, 0.5));
+        }
+
+        .logo-text {
+            font-size: 2rem;
+            letter-spacing: 2px;
+            background: linear-gradient(to right, #fff, #c9d6ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+        }
+
+        .logo-text::after {
+            content: 'INVENTORY';
+            position: absolute;
+            bottom: -18px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.7rem;
+            letter-spacing: 4px;
+            color: var(--accent);
+            width: 100%;
+            text-align: center;
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .auth-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .auth-header p {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 300;
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.8rem;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.95rem;
+        }
+
+        .input-field {
+            position: relative;
+        }
+
+        .input-field i {
+            position: absolute;
+            left: 1.2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 1.1rem 1.2rem 1.1rem 3.2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            transition: all 0.4s ease;
+            color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .form-group input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+
+        .form-group input:focus + .input-field i {
+            color: var(--accent);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 1.2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-password:hover {
+            color: var(--accent);
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .remember-me input {
+            margin-right: 0.6rem;
+            width: 16px;
+            height: 16px;
+            appearance: none;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        .remember-me input:checked {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .remember-me input:checked::after {
+            content: '\f00c';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            color: white;
+            font-size: 10px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .forgot-password {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .forgot-password::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--accent);
+            transition: width 0.3s ease;
+        }
+
+        .forgot-password:hover {
+            color: white;
+        }
+
+        .forgot-password:hover::after {
+            width: 100%;
+        }
+
+        .auth-button {
+            background: var(--tech-gradient);
+            color: white;
+            border: none;
+            padding: 1.2rem;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.4);
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.5px;
+        }
+
+        .auth-button i {
+            margin-right: 0.8rem;
+            font-size: 1.1rem;
+        }
+
+        .auth-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: 0.5s;
+        }
+
+        .auth-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(67, 97, 238, 0.6);
+        }
+
+        .auth-button:hover::before {
+            left: 100%;
+        }
+
+        .auth-footer {
+            text-align: center;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .auth-footer p {
+            margin-bottom: 0.5rem;
+        }
+
+        .auth-footer a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .auth-footer a:hover {
+            color: var(--accent);
+        }
+
+        .system-status {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+            font-size: 0.8rem;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .status-item i {
+            color: var(--accent);
+        }
+
+        @keyframes shine {
+            0% {
+                transform: rotate(30deg) translate(-30%, -30%);
+            }
+            100% {
+                transform: rotate(30deg) translate(30%, 30%);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        /* 3D tilt effect */
+        @media (hover: hover) {
+            .auth-card {
+                transform: perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1);
+                transition: all 0.5s cubic-bezier(0.03, 0.98, 0.52, 0.99);
+            }
+
+            .auth-container:hover .auth-card {
+                transform: perspective(1000px) rotateX(5deg) rotateY(5deg) scale(1.02);
+            }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 576px) {
+            .auth-card {
+                padding: 2rem 1.5rem;
+            }
+
+            .logo-icon {
+                font-size: 3rem;
+            }
+
+            .logo-text {
+                font-size: 1.8rem;
+            }
+
+            .auth-header h2 {
+                font-size: 1.3rem;
+            }
+
+            .system-status {
+                flex-direction: column;
+                gap: 0.8rem;
+                align-items: center;
+            }
+        }
+        .particle {
+    z-index: 0;
+}
+html {
+    scroll-behavior: smooth;
+}
+
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="company-logo">
+                <i class="fas fa-cube logo-icon"></i>
+                <div class="logo-text">NEXUS</div>
+            </div>
+
+            <div class="auth-header">
+                <h2>Control de Inventarios Inteligente</h2>
+                <p>Sistema de gestión de activos empresariales</p>
+            </div>
+
+            <form method="POST" action="{{ url_for('login') }}" class="auth-form">
+                <div class="form-group">
+                    <label for="username">Usuario</label>
+                    <div class="input-field">
+                        <i class="fas fa-user-shield"></i>
+                        <input type="text" id="username" name="username" placeholder="usuario@empresa.com" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <div class="input-field">
+                        <i class="fas fa-key"></i>
+                        <input type="password" id="password" name="password" placeholder="••••••••" required>
+                        <button type="button" class="toggle-password" aria-label="Mostrar contraseña">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-options">
+                    <label class="remember-me">
+                        <input type="checkbox" name="remember"> Recordar sesión
+                    </label>
+                    <a href="#" class="forgot-password">¿Contraseña olvidada?</a>
+                </div>
+
+                <button type="submit" class="auth-button">
+                    <i class="fas fa-sign-in-alt"></i> ACCESO SEGURO
+                </button>
+            </form>
+
+            <div class="system-status">
+                <div class="status-item">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Conexión encriptada (256-bit)</span>
+                </div>
+                <div class="status-item">
+                    <i class="fas fa-bolt"></i>
+                    <span>Sistema operativo</span>
+                </div>
+            </div>
+
+            <div class="auth-footer">
+                <p>© 2025 NEXUS INVENTORY SYSTEMS</p>
+                <p>v4.2.1 | <a href="#">Términos</a> | <a href="#">Privacidad</a> | <a href="#">Soporte</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Toggle password visibility
+        document.querySelector('.toggle-password').addEventListener('click', function() {
+            const passwordInput = document.getElementById('password');
+            const icon = this.querySelector('i');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        });
+
+        // Create floating particles
+        function createParticles() {
+            const container = document.body;
+            const particleCount = window.innerWidth < 768 ? 30 : 60;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+
+                // Random properties
+                const size = Math.random() * 5 + 1;
+                const posX = Math.random() * window.innerWidth;
+                const posY = Math.random() * window.innerHeight;
+                const duration = Math.random() * 20 + 10;
+                const delay = Math.random() * 10;
+                const opacity = Math.random() * 0.5 + 0.1;
+
+                // Apply styles
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${posX}px`;
+                particle.style.top = `${posY}px`;
+                particle.style.animationDuration = `${duration}s`;
+                particle.style.animationDelay = `${delay}s`;
+                particle.style.opacity = opacity;
+                particle.style.background = `rgba(255, 255, 255, ${opacity})`;
+
+                // Random animation
+                const animationName = Math.random() > 0.5 ? 'float' : 'float';
+                particle.style.animationName = animationName;
+
+                container.appendChild(particle);
+            }
+        }
+
+        // Initialize particles
+        window.addEventListener('load', createParticles);
+
+        // 3D tilt effect
+        const card = document.querySelector('.auth-card');
+        const container = document.querySelector('.auth-container');
+
+        if (card && container) {
+            container.addEventListener('mousemove', (e) => {
+                const x = e.clientX - container.getBoundingClientRect().left;
+                const y = e.clientY - container.getBoundingClientRect().top;
+
+                const centerX = container.offsetWidth / 2;
+                const centerY = container.offsetHeight / 2;
+
+                const angleX = (y - centerY) / 20;
+                const angleY = (centerX - x) / 20;
+
+                card.style.transform = `perspective(1000px) rotateX(${angleX}deg) rotateY(${angleY}deg) scale(1.02)`;
+            });
+
+            container.addEventListener('mouseleave', () => {
+                card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)';
+            });
+        }
+    </script>
+</body>
+</html>

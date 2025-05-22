@@ -1,0 +1,306 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    /* Estilos específicos para el dashboard */
+    .dashboard-container {
+        padding: 2rem;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .dashboard-header {
+        margin-bottom: 2.5rem;
+    }
+
+    .dashboard-title {
+        font-family: 'Orbitron', sans-serif;
+        font-weight: 600;
+        color: white;
+        font-size: 2.2rem;
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .dashboard-title i {
+        margin-right: 1rem;
+        color: var(--primary);
+        background: var(--tech-gradient);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    /* Tarjetas de resumen */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .stat-card {
+        background: rgba(26, 26, 46, 0.7);
+        backdrop-filter: blur(12px);
+        border-radius: 12px;
+        padding: 1.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        height: 100%;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(67, 97, 238, 0.2);
+    }
+
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: rgba(67, 97, 238, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1.5rem;
+        font-size: 1.5rem;
+        color: var(--primary);
+        flex-shrink: 0;
+    }
+
+    .stat-info h3 {
+        font-size: 1rem;
+        color: rgba(255, 255, 255, 0.7);
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+    }
+
+    .stat-number {
+        font-size: 2rem;
+        font-weight: 600;
+        color: white;
+        line-height: 1;
+    }
+
+    /* Secciones de actividad reciente */
+    .activity-section {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .activity-card {
+        background: rgba(26, 26, 46, 0.7);
+        backdrop-filter: blur(12px);
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        overflow: hidden;
+    }
+
+    .activity-header {
+        padding: 1.25rem 1.5rem;
+        background: rgba(67, 97, 238, 0.1);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .activity-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: white;
+        margin: 0;
+        display: flex;
+        align-items: center;
+    }
+
+    .activity-title i {
+        margin-right: 0.8rem;
+        color: var(--primary);
+    }
+
+    .activity-body {
+        padding: 1.5rem;
+    }
+
+    .activity-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .activity-item {
+        padding: 0.75rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .activity-item:last-child {
+        border-bottom: none;
+    }
+
+    .item-info {
+        flex-grow: 1;
+    }
+
+    .item-product {
+        font-weight: 500;
+        color: white;
+    }
+
+    .item-meta {
+        font-size: 0.85rem;
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    .item-quantity {
+        background: rgba(67, 97, 238, 0.2);
+        color: var(--primary);
+        padding: 0.3rem 0.6rem;
+        border-radius: 50rem;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .view-all-link {
+        display: block;
+        text-align: center;
+        padding: 1rem;
+        color: var(--primary);
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .view-all-link:hover {
+        background: rgba(67, 97, 238, 0.1);
+        color: white;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .activity-section {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="dashboard-container">
+    <!-- Header -->
+    <div class="dashboard-header">
+        <h1 class="dashboard-title">
+            <i class="fas fa-tachometer-alt"></i>Panel de Control
+        </h1>
+        <p class="warehouse-subtitle">Resumen de actividades recientes</p>
+    </div>
+
+    <!-- Tarjetas de resumen -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-sign-in-alt"></i>
+            </div>
+            <div class="stat-info">
+                <h3>Entradas Hoy</h3>
+                <div class="stat-number">{{ entradas_hoy }}</div>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-sign-out-alt"></i>
+            </div>
+            <div class="stat-info">
+                <h3>Salidas Hoy</h3>
+                <div class="stat-number">{{ salidas_hoy }}</div>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="stat-info">
+                <h3>Productos con Bajo Stock</h3>
+                <div class="stat-number">{{ bajo_stock }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actividad reciente -->
+    <div class="activity-section">
+        <!-- Últimas entradas -->
+        <div class="activity-card">
+            <div class="activity-header">
+                <h2 class="activity-title">
+                    <i class="fas fa-sign-in-alt"></i>Últimas Entradas
+                </h2>
+            </div>
+            <div class="activity-body">
+                <ul class="activity-list">
+                    {% for entrada in ultimas_entradas %}
+                    <li class="activity-item">
+                        <div class="item-info">
+                            <div class="item-product">{{ entrada.producto.nombre }}</div>
+                            <div class="item-meta">
+                                {{ entrada.almacen.nombre }} • {{ entrada.fecha.strftime('%d/%m/%Y %H:%M') }}
+                            </div>
+                        </div>
+                        <span class="item-quantity">+{{ entrada.cantidad }} {{ entrada.producto.unidad }}</span>
+                    </li>
+                    {% else %}
+                    <li class="activity-item">
+                        <div class="item-info">
+                            <div class="item-product">No hay entradas recientes</div>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <a href="{{ url_for('veterano_entradas') }}" class="view-all-link">
+                    Ver todas las entradas <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Últimas salidas -->
+        <div class="activity-card">
+            <div class="activity-header">
+                <h2 class="activity-title">
+                    <i class="fas fa-sign-out-alt"></i>Últimas Salidas
+                </h2>
+            </div>
+            <div class="activity-body">
+                <ul class="activity-list">
+                    {% for salida in ultimas_salidas %}
+                    <li class="activity-item">
+                        <div class="item-info">
+                            <div class="item-product">{{ salida.producto.nombre }}</div>
+                            <div class="item-meta">
+                                {{ salida.almacen.nombre }} • {{ salida.fecha.strftime('%d/%m/%Y %H:%M') }}
+                            </div>
+                        </div>
+                        <span class="item-quantity">-{{ salida.cantidad }} {{ salida.producto.unidad }}</span>
+                    </li>
+                    {% else %}
+                    <li class="activity-item">
+                        <div class="item-info">
+                            <div class="item-product">No hay salidas recientes</div>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <a href="{{ url_for('veterano_salidas') }}" class="view-all-link">
+                    Ver todas las salidas <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

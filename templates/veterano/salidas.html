@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    /* Estilos consistentes con entradas */
+    .outputs-container {
+        padding: 2rem;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .outputs-header {
+        margin-bottom: 2.5rem;
+    }
+
+    .outputs-title {
+        font-family: 'Orbitron', sans-serif;
+        font-weight: 600;
+        color: white;
+        font-size: 2.2rem;
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .outputs-title i {
+        margin-right: 1rem;
+        color: var(--primary);
+        background: var(--tech-gradient);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .outputs-table-container {
+        background: rgba(26, 26, 46, 0.7);
+        backdrop-filter: blur(12px);
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        overflow: hidden;
+    }
+
+    /* Badge para cantidades de salida */
+    .quantity-badge {
+        background: rgba(220, 53, 69, 0.2);
+        color: var(--danger);
+        padding: 0.3em 0.6em;
+        border-radius: 50rem;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+</style>
+
+<div class="outputs-container">
+    <!-- Header -->
+    <div class="outputs-header">
+        <h1 class="outputs-title">
+            <i class="fas fa-sign-out-alt"></i>Registro de Salidas
+        </h1>
+        <p class="warehouse-subtitle">Historial completo de egresos de productos</p>
+    </div>
+
+    <!-- Tabla de salidas -->
+    <div class="outputs-table-container">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Producto</th>
+                        <th>Almacén</th>
+                        <th>Cantidad</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for salida in salidas %}
+                    <tr>
+                        <td data-label="Fecha">{{ salida.fecha.strftime('%d/%m/%Y %H:%M') }}</td>
+                        <td data-label="Producto">
+                            {{ salida.producto.nombre }}
+                            <small class="text-muted d-block">{{ salida.producto.unidad }}</small>
+                        </td>
+                        <td data-label="Almacén">
+                            {{ salida.almacen.nombre }}
+                            <small class="text-muted d-block">{{ salida.almacen.ciudad }}</small>
+                        </td>
+                        <td data-label="Cantidad">
+                            <span class="quantity-badge">-{{ salida.cantidad }}</span>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="empty-message">No hay registros de salidas</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

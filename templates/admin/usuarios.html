@@ -1,0 +1,305 @@
+{% extends "base.html" %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+<style>
+    /* Estilos específicos para usuarios */
+    .users-container {
+        padding: 2rem;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .users-header {
+        margin-bottom: 2.5rem;
+    }
+
+    .users-title {
+        font-family: 'Orbitron', sans-serif;
+        font-weight: 600;
+        color: white;
+        font-size: 2.2rem;
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .users-title i {
+        margin-right: 1rem;
+        color: var(--primary);
+        background: var(--tech-gradient);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .add-user-form {
+        background: rgba(26, 26, 46, 0.7);
+        backdrop-filter: blur(12px);
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        margin-bottom: 2.5rem;
+        padding: 1.5rem;
+    }
+
+    .form-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: white;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .form-title i {
+        margin-right: 0.8rem;
+        color: var(--accent);
+    }
+
+    .users-table-container {
+        background: rgba(26, 26, 46, 0.7);
+        backdrop-filter: blur(12px);
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        overflow: hidden;
+    }
+
+    /* Estilos para los badges de rol */
+    .role-badge {
+        display: inline-block;
+        padding: 0.35em 0.65em;
+        font-size: 0.75em;
+        font-weight: 600;
+        line-height: 1;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: baseline;
+        border-radius: 50rem;
+    }
+
+    .role-admin {
+        background: rgba(114, 9, 183, 0.2);
+        color: var(--secondary);
+    }
+
+    .role-veterano {
+        background: rgba(13, 110, 253, 0.2);
+        color: #0d6efd;
+    }
+
+    .role-miembro {
+        background: rgba(25, 135, 84, 0.2);
+        color: #198754;
+    }
+
+    /* Estilos para el input de contraseña */
+    .password-input-container {
+        position: relative;
+    }
+
+    .toggle-password {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: rgba(255, 255, 255, 0.6);
+        cursor: pointer;
+    }
+</style>
+
+<div class="users-container">
+    <!-- Header -->
+    <div class="users-header">
+        <h1 class="users-title">
+            <i class="fas fa-users-cog"></i>Gestión de Usuarios
+        </h1>
+        <p class="warehouse-subtitle">Administra los usuarios del sistema</p>
+    </div>
+
+    <!-- Formulario para agregar usuario -->
+    <div class="add-user-form">
+        <h2 class="form-title"><i class="fas fa-user-plus"></i> Agregar Nuevo Usuario</h2>
+        <form method="POST" action="{{ url_for('agregar_usuario') }}">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="usuario" class="form-label">Nombre de Usuario</label>
+                    <input type="text" class="form-control" id="usuario" name="usuario" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password" class="form-label">Contraseña</label>
+                    <div class="password-input-container">
+                        <input type="password" class="form-control" id="password" name="password" required>
+                        <button type="button" class="toggle-password" aria-label="Mostrar contraseña">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="rol" class="form-label">Rol</label>
+                    <select class="form-control" id="rol" name="rol" required>
+                        <option value="">Seleccionar rol...</option>
+                        <option value="admin">Administrador</option>
+                        <option value="veterano">Veterano</option>
+                        <option value="miembro">Miembro</option>
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Crear Usuario
+            </button>
+        </form>
+    </div>
+
+    <!-- Tabla de usuarios -->
+    <div class="users-table-container">
+        <div class="table-header">
+            <h2 class="table-title"><i class="fas fa-users"></i> Listado de Usuarios</h2>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Usuario</th>
+                        <th>Rol</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for usuario in usuarios %}
+                    <tr>
+                        <td data-label="ID">{{ usuario.id }}</td>
+                        <td data-label="Usuario">{{ usuario.usuario }}</td>
+                        <td data-label="Rol">
+                            <span class="role-badge role-{{ usuario.rol }}">
+                                {{ usuario.rol|capitalize }}
+                            </span>
+                        </td>
+                        <td data-label="Acciones" class="actions-cell">
+                            <button class="btn-action btn-edit"
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#editUserModal{{ usuario.id }}"
+                                    title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            {% if usuario.id != session.get('user_id') %}
+                            <button class="btn-action btn-delete"
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#deleteUserModal{{ usuario.id }}"
+                                    title="Eliminar">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    
+                    <!-- Modal de Edición -->
+                    <div class="modal fade" id="editUserModal{{ usuario.id }}" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Editar Usuario: {{ usuario.usuario }}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <form method="POST" action="{{ url_for('editar_usuario', id=usuario.id) }}">
+                                    <div class="modal-body">
+                                        <div class="form-group mb-3">
+                                            <label class="form-label">Nombre de Usuario</label>
+                                            <input type="text" class="form-control" name="usuario" value="{{ usuario.usuario }}" required>
+                                        </div>
+                                        <div class="form-group mb-3">
+                                            <label class="form-label">Nueva Contraseña (dejar vacío para no cambiar)</label>
+                                            <div class="password-input-container">
+                                                <input type="password" class="form-control" name="password">
+                                                <button type="button" class="toggle-password" aria-label="Mostrar contraseña">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Rol</label>
+                                            <select class="form-control" name="rol" required>
+                                                <option value="admin" {% if usuario.rol == 'admin' %}selected{% endif %}>Administrador</option>
+                                                <option value="veterano" {% if usuario.rol == 'veterano' %}selected{% endif %}>Veterano</option>
+                                                <option value="miembro" {% if usuario.rol == 'miembro' %}selected{% endif %}>Miembro</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-outline" data-bs-dismiss="modal">Cancelar</button>
+                                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Modal de Eliminación -->
+                    {% if usuario.id != session.get('user_id') %}
+                    <div class="modal fade" id="deleteUserModal{{ usuario.id }}" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Confirmar Eliminación</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>¿Estás seguro de eliminar al usuario <strong>{{ usuario.usuario }}</strong>?</p>
+                                    <p class="text-danger">Esta acción no se puede deshacer y el usuario perderá acceso al sistema.</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-outline" data-bs-dismiss="modal">Cancelar</button>
+                                    <a href="{{ url_for('eliminar_usuario', id=usuario.id) }}" class="btn btn-danger">Eliminar</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="empty-message">No hay usuarios registrados</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Bootstrap Bundle JS (incluye Popper) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Inicialización de tooltips -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+    
+    // Toggle password visibility
+    document.querySelectorAll('.toggle-password').forEach(button => {
+        button.addEventListener('click', function() {
+            const input = this.previousElementSibling;
+            const icon = this.querySelector('i');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

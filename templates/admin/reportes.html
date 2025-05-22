@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}Reportes{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title"><i class="fas fa-chart-bar"></i> Reportes</h2>
+    </div>
+    <div class="card-body">
+        <div class="report-section">
+            <h3><i class="fas fa-arrow-down"></i> Entradas este mes</h3>
+            {% if entradas_mes %}
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Almacén</th>
+                                <th>Cantidad</th>
+                                <th>Fecha</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for entrada in entradas_mes %}
+                            <tr>
+                                <td>{{ entrada.producto.nombre }}</td>
+                                <td>{{ entrada.almacen.nombre }}</td>
+                                <td>{{ entrada.cantidad }} {{ entrada.producto.unidad }}</td>
+                                <td>{{ entrada.fecha.strftime('%d/%m/%Y') }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    No hay entradas registradas este mes
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="report-section" style="margin-top: 2rem;">
+            <h3><i class="fas fa-arrow-up"></i> Salidas este mes</h3>
+            {% if salidas_mes %}
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Almacén</th>
+                                <th>Cantidad</th>
+                                <th>Fecha</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for salida in salidas_mes %}
+                            <tr>
+                                <td>{{ salida.producto.nombre }}</td>
+                                <td>{{ salida.almacen.nombre }}</td>
+                                <td>{{ salida.cantidad }} {{ salida.producto.unidad }}</td>
+                                <td>{{ salida.fecha.strftime('%d/%m/%Y') }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    No hay salidas registradas este mes
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="report-section" style="margin-top: 2rem;">
+            <h3><i class="fas fa-boxes"></i> Inventario por Almacén</h3>
+            {% for almacen, existencias in existencias_por_almacen.items() %}
+                <h4 style="margin-top: 1.5rem;">{{ almacen }}</h4>
+                {% if existencias %}
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Producto</th>
+                                    <th>Existencia</th>
+                                    <th>Unidad</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for existencia in existencias %}
+                                <tr>
+                                    <td>{{ existencia.producto.nombre }}</td>
+                                    <td class="{% if existencia.cantidad_actual < 5 %}text-danger{% endif %}">
+                                        {{ existencia.cantidad_actual }}
+                                    </td>
+                                    <td>{{ existencia.producto.unidad }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        No hay productos en este almacén
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

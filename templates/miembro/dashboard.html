@@ -1,0 +1,263 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    /* Estilos específicos para el dashboard de miembro */
+    .member-dashboard {
+        padding: 2rem;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .member-header {
+        margin-bottom: 2.5rem;
+    }
+
+    .member-title {
+        font-family: 'Orbitron', sans-serif;
+        font-weight: 600;
+        color: white;
+        font-size: 2.2rem;
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .member-title i {
+        margin-right: 1rem;
+        color: var(--primary);
+        background: var(--tech-gradient);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    /* Tarjetas de resumen */
+    .member-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .member-card {
+        background: rgba(26, 26, 46, 0.7);
+        backdrop-filter: blur(12px);
+        border-radius: 12px;
+        padding: 1.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .member-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(67, 97, 238, 0.2);
+    }
+
+    .card-title {
+        font-size: 1rem;
+        color: rgba(255, 255, 255, 0.7);
+        margin-bottom: 1rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+    }
+
+    .card-title i {
+        margin-right: 0.8rem;
+        color: var(--accent);
+    }
+
+    .card-value {
+        font-size: 2rem;
+        font-weight: 600;
+        color: white;
+        line-height: 1;
+    }
+
+    /* Solicitudes recientes */
+    .requests-section {
+        background: rgba(26, 26, 46, 0.7);
+        backdrop-filter: blur(12px);
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        overflow: hidden;
+    }
+
+    .section-header {
+        padding: 1.25rem 1.5rem;
+        background: rgba(67, 97, 238, 0.1);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .section-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: white;
+        margin: 0;
+        display: flex;
+        align-items: center;
+    }
+
+    .section-title i {
+        margin-right: 0.8rem;
+        color: var(--primary);
+    }
+
+    .section-body {
+        padding: 1.5rem;
+    }
+
+    .request-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .request-item {
+        padding: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .request-item:last-child {
+        border-bottom: none;
+    }
+
+    .request-info {
+        flex-grow: 1;
+    }
+
+    .request-product {
+        font-weight: 500;
+        color: white;
+    }
+
+    .request-meta {
+        font-size: 0.85rem;
+        color: rgba(255, 255, 255, 0.6);
+        margin-top: 0.3rem;
+    }
+
+    .request-status {
+        padding: 0.3rem 0.8rem;
+        border-radius: 50rem;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .status-pending {
+        background: rgba(255, 193, 7, 0.2);
+        color: var(--warning);
+    }
+
+    .status-approved {
+        background: rgba(40, 167, 69, 0.2);
+        color: var(--success);
+    }
+
+    .status-rejected {
+        background: rgba(220, 53, 69, 0.2);
+        color: var(--danger);
+    }
+
+    .view-all-link {
+        display: block;
+        text-align: center;
+        padding: 1rem;
+        color: var(--primary);
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .view-all-link:hover {
+        background: rgba(67, 97, 238, 0.1);
+        color: white;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .member-stats {
+            grid-template-columns: 1fr;
+        }
+
+        .request-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+    }
+</style>
+
+<div class="member-dashboard">
+    <!-- Header -->
+    <div class="member-header">
+        <h1 class="member-title">
+            <i class="fas fa-user"></i>Mi Panel
+        </h1>
+        <p class="warehouse-subtitle">Resumen de tu actividad</p>
+    </div>
+
+    <!-- Tarjetas de resumen -->
+    <div class="member-stats">
+        <div class="member-card">
+            <h3 class="card-title"><i class="fas fa-exclamation-triangle"></i> Productos con Bajo Stock</h3>
+            <div class="card-value">{{ bajo_stock }}</div>
+            <p class="text-muted mt-2">Productos con menos de 5 unidades en inventario</p>
+        </div>
+
+        <div class="member-card">
+            <h3 class="card-title"><i class="fas fa-clock"></i> Solicitudes Pendientes</h3>
+            <div class="card-value">
+                {{ ultimas_solicitudes|selectattr('estado', 'equalto', 'pendiente')|list|length }}
+            </div>
+            <p class="text-muted mt-2">Tus solicitudes en revisión</p>
+        </div>
+
+        <div class="member-card">
+            <h3 class="card-title"><i class="fas fa-check-circle"></i> Solicitudes Aprobadas</h3>
+            <div class="card-value">
+                {{ ultimas_solicitudes|selectattr('estado', 'equalto', 'aprobada')|list|length }}
+            </div>
+            <p class="text-muted mt-2">Tus solicitudes aprobadas</p>
+        </div>
+    </div>
+
+    <!-- Solicitudes recientes -->
+    <div class="requests-section">
+        <div class="section-header">
+            <h2 class="section-title"><i class="fas fa-history"></i> Tus Últimas Solicitudes</h2>
+        </div>
+        <div class="section-body">
+            <ul class="request-list">
+                {% for solicitud in ultimas_solicitudes %}
+                <li class="request-item">
+                    <div class="request-info">
+                        <div class="request-product">{{ solicitud.producto.nombre }}</div>
+                        <div class="request-meta">
+                            {{ solicitud.almacen.nombre }} •
+                            {{ solicitud.fecha.strftime('%d/%m/%Y') }} •
+                            {{ solicitud.cantidad }} {{ solicitud.producto.unidad }}
+                        </div>
+                    </div>
+                    <span class="request-status status-{{ solicitud.estado }}">
+                        {{ solicitud.estado|capitalize }}
+                    </span>
+                </li>
+                {% else %}
+                <li class="request-item">
+                    <div class="request-info">
+                        <div class="request-product">No hay solicitudes recientes</div>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+            <a href="{{ url_for('miembro_solicitudes') }}" class="view-all-link">
+                Ver todas tus solicitudes <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
